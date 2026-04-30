@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Test A/B</title>
+</head>
+<body>
+  <h1>Test</h1>
+
+  <form id="testForm">
+    <p>1. ¿Qué preferís?</p>
+    <label><input type="radio" name="q1" value="A" required> Opción A</label><br>
+    <label><input type="radio" name="q1" value="B"> Opción B</label><br>
+
+    <p>2. ¿Qué te representa más?</p>
+    <label><input type="radio" name="q2" value="A" required> Opción A</label><br>
+    <label><input type="radio" name="q2" value="B"> Opción B</label><br>
+
+    <p>3. Elegí una opción</p>
+    <label><input type="radio" name="q3" value="A" required> Opción A</label><br>
+    <label><input type="radio" name="q3" value="B"> Opción B</label><br>
+
+    <br>
+    <button type="submit">Ver resultado</button>
+  </form>
+
+  <h2 id="resultado"></h2>
+
+  <script>
+    document.getElementById("testForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      let a = 0;
+      let b = 0;
+
+      const respuestas = new FormData(this);
+
+      for (const valor of respuestas.values()) {
+        if (valor === "A") a++;
+        if (valor === "B") b++;
+      }
+
+      let resultado = "";
+
+      if (a > b) resultado = "Resultado: sos tipo A";
+      else if (b > a) resultado = "Resultado: sos tipo B";
+      else resultado = "Resultado: empate";
+
+      document.getElementById("resultado").innerText = resultado;
+    });
+  </script>
+</body>
+</html>
