@@ -1,53 +1,51 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Test A/B</title>
-</head>
-<body>
-  <h1>Test</h1>
+<form id="form">
+  <input name="nombre" placeholder="Nombre" required>
 
-  <form id="testForm">
-    <p>1. ¿Qué preferís?</p>
-    <label><input type="radio" name="q1" value="A" required> Opción A</label><br>
-    <label><input type="radio" name="q1" value="B"> Opción B</label><br>
+  <p>1. Pregunta</p>
+  <label><input type="radio" name="p1" value="A" required> A</label>
+  <label><input type="radio" name="p1" value="B"> B</label>
 
-    <p>2. ¿Qué te representa más?</p>
-    <label><input type="radio" name="q2" value="A" required> Opción A</label><br>
-    <label><input type="radio" name="q2" value="B"> Opción B</label><br>
+  <p>2. Pregunta</p>
+  <label><input type="radio" name="p2" value="A" required> A</label>
+  <label><input type="radio" name="p2" value="B"> B</label>
 
-    <p>3. Elegí una opción</p>
-    <label><input type="radio" name="q3" value="A" required> Opción A</label><br>
-    <label><input type="radio" name="q3" value="B"> Opción B</label><br>
+  <button type="submit">Enviar</button>
+</form>
 
-    <br>
-    <button type="submit">Ver resultado</button>
-  </form>
+<div id="resultado"></div>
 
-  <h2 id="resultado"></h2>
+<script>
+const URL_SCRIPT = "PEGAR_URL_DEL_APPS_SCRIPT_ACA";
 
-  <script>
-    document.getElementById("testForm").addEventListener("submit", function(e) {
-      e.preventDefault();
+document.getElementById("form").addEventListener("submit", async function(e) {
+  e.preventDefault();
 
-      let a = 0;
-      let b = 0;
+  const formData = new FormData(this);
+  const data = Object.fromEntries(formData.entries());
 
-      const respuestas = new FormData(this);
+  let a = 0;
+  let b = 0;
 
-      for (const valor of respuestas.values()) {
-        if (valor === "A") a++;
-        if (valor === "B") b++;
-      }
+  Object.values(data).forEach(v => {
+    if (v === "A") a++;
+    if (v === "B") b++;
+  });
 
-      let resultado = "";
+  data.totalA = a;
+  data.totalB = b;
+  data.resultado = a > b ? "Resultado A" : b > a ? "Resultado B" : "Empate";
+  data.fecha = new Date().toLocaleString();
 
-      if (a > b) resultado = "Resultado: sos tipo A";
-      else if (b > a) resultado = "Resultado: sos tipo B";
-      else resultado = "Resultado: empate";
+  await fetch(URL_SCRIPT, {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify(data)
+  });
 
-      document.getElementById("resultado").innerText = resultado;
-    });
-  </script>
-</body>
-</html>
+  document.getElementById("resultado").innerHTML =
+    `<h2>${data.resultado}</h2>
+     <p>A: ${a} / B: ${b}</p>`;
+
+  this.style.display = "none";
+});
+</script>
